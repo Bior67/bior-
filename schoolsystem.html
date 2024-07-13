@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>School Management System</h1>
+    
+    <div class="container">
+        <h2>Register Student</h2>
+        <label for="student_id">Student ID</label>
+        <input type="text" id="student_id">
+        <label for="student_name">Student Name</label>
+        <input type="text" id="student_name">
+        <button onclick="registerStudent()">Register Student</button>
+    </div>
+
+    <div class="container">
+        <h2>Register Teacher</h2>
+        <label for="teacher_id">Teacher ID</label>
+        <input type="text" id="teacher_id">
+        <label for="teacher_name">Teacher Name</label>
+        <input type="text" id="teacher_name">
+        <button onclick="registerTeacher()">Register Teacher</button>
+    </div>
+
+    <div class="container">
+        <h2>Create Class</h2>
+        <label for="class_id">Class ID</label>
+        <input type="text" id="class_id">
+        <label for="class_name">Class Name</label>
+        <input type="text" id="class_name">
+        <button onclick="createClass()">Create Class</button>
+    </div>
+
+    <div class="container">
+        <h2>Assign Student to Class</h2>
+        <label for="assign_student_id">Student ID</label>
+        <input type="text" id="assign_student_id">
+        <label for="assign_class_id">Class ID</label>
+        <input type="text" id="assign_class_id">
+        <button onclick="assignStudent()">Assign Student</button>
+    </div>
+
+    <div class="container">
+        <h2>Assign Teacher to Class</h2>
+        <label for="assign_teacher_id">Teacher ID</label>
+        <input type="text" id="assign_teacher_id">
+        <label for="assign_teacher_class_id">Class ID</label>
+        <input type="text" id="assign_teacher_class_id">
+        <button onclick="assignTeacher()">Assign Teacher</button>
+    </div>
+
+    <div class="container">
+        <h2>Track Attendance</h2>
+        <label for="attendance_class_id">Class ID</label>
+        <input type="text" id="attendance_class_id">
+        <button onclick="trackAttendance()">Track Attendance</button>
+        <pre id="attendance_result"></pre>
+    </div>
+
+    <div class="container">
+        <h2>Track Performance</h2>
+        <label for="performance_student_id">Student ID</label>
+        <input type="text" id="performance_student_id">
+        <button onclick="trackPerformance()">Track Performance</button>
+        <pre id="performance_result"></pre>
+    </div>
+
+    <script>
+        async function registerStudent() {
+            const studentId = document.getElementById('student_id').value;
+            const studentName = document.getElementById('student_name').value;
+            const response = await fetch('/register_student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, name: studentName })
+            });
+            const result = await response.json();
+            alert(`Registered Student: ${result.name} (ID: ${result.student_id})`);
+        }
+
+        async function registerTeacher() {
+            const teacherId = document.getElementById('teacher_id').value;
+            const teacherName = document.getElementById('teacher_name').value;
+            const response = await fetch('/register_teacher', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teacher_id: teacherId, name: teacherName })
+            });
+            const result = await response.json();
+            alert(`Registered Teacher: ${result.name} (ID: ${result.teacher_id})`);
+        }
+
+        async function createClass() {
+            const classId = document.getElementById('class_id').value;
+            const className = document.getElementById('class_name').value;
+            const response = await fetch('/create_class', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ class_id: classId, class_name: className })
+            });
+            const result = await response.json();
+            alert(`Created Class: ${result.class_name} (ID: ${result.class_id})`);
+        }
+
+        async function assignStudent() {
+            const studentId = document.getElementById('assign_student_id').value;
+            const classId = document.getElementById('assign_class_id').value;
+            const response = await fetch('/assign_student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, class_id: classId })
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function assignTeacher() {
+            const teacherId = document.getElementById('assign_teacher_id').value;
+            const classId = document.getElementById('assign_teacher_class_id').value;
+            const response = await fetch('/assign_teacher', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teacher_id: teacherId, class_id: classId })
+            });
+            const result = await response.json();
+            alert(result.message);
+        }
+
+        async function trackAttendance() {
+            const classId = document.getElementById('attendance_class_id').value;
+            const response = await fetch(`/track_attendance?class_id=${classId}`);
+            const result = await response.json();
+            document.getElementById('attendance_result').textContent = JSON.stringify(result, null, 2);
+        }
+
+        async function trackPerformance() {
+            const studentId = document.getElementById('performance_student_id').value;
+            const response = await fetch(`/track_performance?student_id=${studentId}`);
+            const result = await response.json();
+            document.getElementById('performance_result').textContent = JSON.stringify(result, null, 2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            float: left;
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        .showcase {
+            min-height: 400px;
+            background: #35424a;
+            color: #ffffff;
+            text-align: center;
+            padding: 50px 0;
+        }
+        .showcase h1 {
+            font-size: 55px;
+            margin-top: 100px;
+        }
+        .showcase p {
+            font-size: 20px;
+        }
+        .form-container {
+            background: #ffffff;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .form-container h2 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            background: #35424a;
+            color: #ffffff;
+            border: 0;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background: #e8491d;
+        }
+        .account-details {
+            background: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .account-details h3 {
+            margin-bottom: 20px;
+        }
+        .account-details p {
+            margin: 0;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1>Bank Account Management System</h1>
+            </div>
+        </div>
+    </header>
+
+    <section class="showcase">
+        <div class="container">
+            <h1>Welcome to the Bank Account Management System</h1>
+            <p>Manage your bank accounts with ease</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="form-container">
+            <h2>Create Customer and Account</h2>
+            <div class="form-group">
+                <label for="customer-name">Customer Name</label>
+                <input type="text" id="customer-name" placeholder="Enter customer name">
+            </div>
+            <div class="form-group">
+                <label for="customer-id">Customer ID</label>
+                <input type="text" id="customer-id" placeholder="Enter customer ID">
+            </div>
+            <div class="form-group">
+                <label for="account-type">Account Type</label>
+                <select id="account-type">
+                    <option value="Savings">Savings</option>
+                    <option value="Checking">Checking</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="initial-deposit">Initial Deposit</label>
+                <input type="number" id="initial-deposit" placeholder="Enter initial deposit">
+            </div>
+            <div class="form-group">
+                <button onclick="createAccount()">Create Account</button>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h2>Perform Operations</h2>
+            <div class="form-group">
+                <label for="operation-type">Operation</label>
+                <select id="operation-type" onchange="toggleTargetAccount()">
+                    <option value="deposit">Deposit</option>
+                    <option value="withdraw">Withdraw</option>
+                    <option value="transfer">Transfer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="account-number">Account Number</label>
+                <input type="text" id="account-number" placeholder="Enter account number">
+            </div>
+            <div class="form-group" id="target-account-group" style="display: none;">
+                <label for="target-account-number">Target Account Number</label>
+                <input type="text" id="target-account-number" placeholder="Enter target account number">
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount">
+            </div>
+            <div class="form-group">
+                <button onclick="performOperation()">Perform Operation</button>
+            </div>
+        </div>
+
+        <div class="account-details" id="account-details" style="display: none;">
+            <h3>Account Details</h3>
+            <p id="balance"></p>
+            <h4>Transactions</h4>
+            <div id="transactions"></div>
+        </div>
+    </section>
+
+    <script>
+        const accounts = {};
+        
+        function createAccount() {
+            const name = document.getElementById('customer-name').value;
+            const customerId = document.getElementById('customer-id').value;
+            const accountType = document.getElementById('account-type').value;
+            const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
+
+            if (!accounts[customerId]) {
+                accounts[customerId] = {
+                    name: name,
+                    accounts: []
+                };
+            }
+
+            const accountNumber = customerId + '-' + (accounts[customerId].accounts.length + 1);
+            const newAccount = {
+                accountNumber: accountNumber,
+                accountType: accountType,
+                balance: initialDeposit,
+                transactions: [`Account created with initial deposit: ${initialDeposit}`]
+            };
+
+            accounts[customerId].accounts.push(newAccount);
+            alert('Account created successfully!');
+        }
+
+        function performOperation() {
+            const operationType = document.getElementById('operation-type').value;
+            const accountNumber = document.getElementById('account-number').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            let targetAccountNumber = null;
+
+            if (operationType === 'transfer') {
+                targetAccountNumber = document.getElementById('target-account-number').value;
+            }
+
+            let account = null;
+            let customer = null;
+
+            for (const customerId in accounts) {
+                const customerAccounts = accounts[customerId].accounts;
+                for (let i = 0; i < customerAccounts.length; i++) {
+                    if (customerAccounts[i].accountNumber === accountNumber) {
+                        account = customerAccounts[i];
+                        customer = accounts[customerId];
+                        break;
+                    }
+                }
+                if (account) break;
+            }
+
+            if (!account) {
+                alert('Account not found!');
+                return;
+            }
+
+            if (operationType === 'deposit') {
+                account.balance += amount;
+                account.transactions.push(`Deposited: ${amount}`);
+            } else if (operationType === 'withdraw') {
+                if (amount <= account.balance) {
+                    account.balance -= amount;
+                    account.transactions.push(`Withdrew: ${amount}`);
+                } else {
+                    alert('Insufficient funds!');
+                    return;
+                }
+            } else if (operationType === 'transfer') {
+                let targetAccount = null;
+
+                for (const customerId in accounts) {
+                    const customerAccounts = accounts[customerId].accounts;
+                    for (let i = 0; i < customerAccounts.length; i++) {
+                        if (customerAccounts[i].accountNumber === targetAccountNumber) {
+                            targetAccount = customerAccounts[i];
+                            break;
+                        }
+                    }
+                    if (targetAccount) break;
+                }
+
+                if (!targetAccount) {
+                    alert('Target account not found!');
+                    return;
+                }
+
+                if (amount <= account.balance) {
+                    account.balance -= amount;
+                    targetAccount.balance += amount;
+                    account.transactions.push(`Transferred: ${amount} to account ${targetAccountNumber}`);
+                    targetAccount.transactions.push(`Received: ${amount} from account ${accountNumber}`);
+                } else {
+                    alert('Insufficient funds!');
+                    return;
+                }
+            }
+
+            displayAccountDetails(account);
+        }
+
+        function toggleTargetAccount() {
+            const operationType = document.getElementById('operation-type').value;
+            const targetAccountGroup = document.getElementById('target-account-group');
+            if (operationType === 'transfer') {
+                targetAccountGroup.style.display = 'block';
+            } else {
+                targetAccountGroup.style.display = 'none';
+            }
+        }
+
+        function displayAccountDetails(account) {
+            document.getElementById('account-details').style.display = 'block';
+            document.getElementById('balance').innerText = `Balance: $${account.balance.toFixed(2)}`;
+            const transactions = account.transactions.map(transaction => `<p>${transaction}</p>`).join('');
+            document.getElementById('transactions').innerHTML = transactions;
+        }
+    </script>
+</body>
+</html>
